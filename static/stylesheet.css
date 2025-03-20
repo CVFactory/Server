@@ -1,0 +1,198 @@
+/* 기본 스타일 */
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+/* 헤더 스타일 */
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+/* 메인 컨텐츠 영역 */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* 프롬프트 컨테이너 레이아웃 */
+.prompt-container {
+  width: 90%;
+  max-width: 800px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.left-column {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.left-column .chat-box {
+  height: auto; /* 작은 프롬프트의 경우 자동 높이 */
+}
+
+.left-column .chat-box:last-child {
+  flex-grow: 1; /* 마지막 채팅 박스가 남는 공간을 모두 차지 */
+}
+
+.right-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* 채팅 박스 스타일 */
+.chat-box {
+  width: 100%;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,.05);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column; /* 자식 요소를 세로로 배치 */
+  height: 100%; /* 부모 컨테이너의 높이를 모두 차지 */
+}
+
+.small-prompt {
+  max-height: 150px;
+  margin: 0;
+}
+
+#user_story {
+  height: 100%; /* 부모 컨테이너의 높이를 모두 차지 */
+  width: 100%; /* 부모 컨테이너의 너비를 모두 차지 */
+  box-sizing: border-box; /* 패딩과 테두리를 포함한 크기 계산 */
+  resize: none; /* 사용자가 크기를 조정하지 못하게 함 */
+}
+
+.large-prompt {
+  height: 490px;
+  margin: 0;
+}
+
+.large-textarea {
+  height: 420px;
+}
+
+/* 텍스트 영역 스타일 */
+textarea {
+  width: 100%;
+  border: none;
+  min-height: 50px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  outline: none;
+  resize: none;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* 액션 버튼 영역 */
+.actions {
+  display: flex;
+  justify-content: right;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+/* 버튼 스타일 */
+.black-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.white-btn {
+  background: #fff;
+  color: #000;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  padding: 8px 16px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.gray-btn {
+  background: #f7f7f8;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+/* 소셜 아이콘 스타일 */
+.social-icons {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  justify-content: center;
+}
+
+.social-item {
+  margin: 0 10px;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #f7f7f8;
+  color: #333;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.social-link i {
+  font-size: 18px;
+}
+.social-link img {
+  width: 31px;
+  height: 31px;
+  object-fit: contain;
+}
+
+.social-link:hover {
+  background-color: #fff;
+  color: #fff;
+  transform: translateY(-4px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* 푸터 스타일 */
+footer {
+  text-align: center;
+  padding: 10px;
+  color: #666;
+  border-top: 1px solid #eee;
+}
