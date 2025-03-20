@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>CVFactory</title>
+<link rel="stylesheet" href="{% static 'stylesheet.css' %}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
+<style>
+  /* 블러 처리된 배경 스타일 */
+  #loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div style="font-weight:bold">CVFactory</div>
+  <div>
+    <button class="black-btn" onclick="loginWithGoogle()">로그인</button>
+    <button class="white-btn">회원가입</button>
+  </div>
+</header>
+
+<main>
+
+  <h1>자소서 생성을 위해 지원하려는 채용정보를 알려주세요!</h1>
+
+  <!-- 전체 화면 블러 & 로딩 애니메이션 -->
+  <div id="loading-overlay" style="display: none;">
+    <div id="lottie-container" 
+        data-animation="{% static 'lottie/factory-loading.json' %}"
+        style="width: 200px; height: 200px;">
+    </div>
+    <p>자기소개서를 생성하는 중입니다...</p>
+  </div>
+
+
+  <!-- 프롬프트 레이아웃 컨테이너 -->
+  <div class="prompt-container">
+    <!-- 왼쪽 열: 3개의 작은 프롬프트 -->
+    <div class="left-column">
+      <!-- 프롬프트 1 -->
+      <div class="chat-box small-prompt">
+        <textarea id="job_url" placeholder="공고 URL을 입력하세요."></textarea>
+      </div>
+      
+      <!-- 프롬프트 2 -->
+      <div class="chat-box small-prompt">
+        <textarea id="company_url" placeholder="지원하고자 하는 사이트 공식URL을 입력하세세요."></textarea>
+      </div>
+      
+      <!-- 프롬프트 3 -->
+      <div class="chat-box">
+        <textarea id="user_story" placeholder="나의 성격과 역경을 적어주세요"></textarea>
+      </div>
+    </div>
+    
+    <!-- 오른쪽 열: 1개의 큰 프롬프트 -->
+    <div class="right-column">
+      <!-- 프롬프트 4 -->
+      <div class="chat-box large-prompt">
+        <textarea id="generated_resume" placeholder="완성된 자기소개서가 여기에 표시됩니다." class="large-textarea"></textarea>
+        <div class="actions">
+          <button class="black-btn" onclick="generateResume()">생성하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 원래 있던 suggestions 대신 소셜 아이콘으로 대체 -->
+  <ul class="social-icons">
+
+    <ul class="social-icons">
+      <li class="social-item">
+        <a class="social-link" href="https://www.facebook.com/" target="_blank">
+          <img src="{% static 'images/facebook-icon.png' %}" alt="Facebook">
+        </a>
+      </li>
+      <li class="social-item">
+        <a class="social-link" href="https://twitter.com/" target="_blank">
+          <img src="{% static 'images/twitter-icon.png' %}" alt="Twitter">
+        </a>
+      </li>
+      <li class="social-item">
+        <a class="social-link" href="https://www.instagram.com/" target="_blank">
+          <img src="{% static 'images/instagram-icon.png' %}" alt="Instagram">
+        </a>
+      </li>
+      <li class="social-item">
+        <a class="social-link" href="https://github.com/" target="_blank">
+          <img src="{% static 'images/github-icon.png' %}" alt="GitHub">
+        </a>
+      </li>
+      <li class="social-item">
+        <a class="social-link" href="https://www.linkedin.com/" target="_blank">
+          <img src="{% static 'images/linkedin-icon.png' %}" alt="LinkedIn">
+        </a>
+      </li>
+    </ul>
+</main>
+
+<footer>
+  By messaging ChatGPT, you agree to our <a href="#">Terms</a> and have read our <a href="#">Privacy Policy</a>.
+</footer>
+<script>
+  function loginWithGoogle() {
+      window.location.href = "http://127.0.0.1:8000/accounts/google/login/";
+  }
+
+  function saveInput(id) {
+      let element = document.getElementById(id);
+      
+      if (!element) {  // ID가 없으면 오류 방지
+          console.error(`ID가 ${id}인 요소를 찾을 수 없습니다.`);
+          return;
+      }
+      
+      localStorage.setItem(id, element.value);
+      alert("저장되었습니다!");
+  }
+
+  // 페이지 로드 후 강제로 로딩 오버레이 숨기기 (혹시 CSS 적용이 안될 경우 대비)
+  document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("loading-overlay").style.display = "none";
+  });
+
+  function generateResume() {
+      let job_url = document.getElementById("job_url").value.trim();
+      let company_url = document.getElementById("company_url").value.trim();
+      let user_story = document.getElementById("user_story").value.trim();
+
+      if (!job_url || !user_story) {
+          alert("공고 URL과 자기소개 내용을 입력하세요.");
+          return;
+      }
+
+      // 로딩 화면 표시
+      document.getElementById("loading-overlay").style.display = "flex";
+
+      let animationContainer = document.getElementById("lottie-container");
+      let animationPath = animationContainer.getAttribute("data-animation");
+
+      // 기존 애니메이션이 있다면 제거 후 새로 실행
+      if (animationContainer.lottieInstance) {
+        animationContainer.lottieInstance.destroy();
+      }
+
+      animationContainer.lottieInstance = lottie.loadAnimation({
+        container: animationContainer,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        path: animationPath
+      });
+
+      // CSRF 토큰 가져오기
+      const csrftoken = getCookie("csrftoken");
+
+      fetch("http://127.0.0.1:8000/api/create_resume/", {
+          method: "POST",
+          headers: { 
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken  // CSRF 토큰 추가
+          },
+          body: JSON.stringify({
+              recruitment_notice_url: job_url,
+              target_company_url: company_url,
+              user_story: user_story
+          }),
+          credentials: "include"  // 쿠키 인증 포함
+      })
+      .then(response => response.json())
+      .then(data => {
+          console.log("서버 응답:", data);  
+
+          let generatedResumeElement = document.getElementById("generated_resume");
+
+          if (generatedResumeElement) {
+              generatedResumeElement.value = data.generated_resume || "자기소개서 생성에 실패했습니다.";
+          } else {
+              console.error("generated_resume 요소를 찾을 수 없습니다.");
+          }
+      })
+      .catch(error => {
+        console.error("에러 발생:", error);
+        alert("서버 요청 중 오류가 발생했습니다.");
+      })
+      .finally(() => {
+        // 로딩 화면 숨김
+        document.getElementById("loading-overlay").style.display = "none";
+
+        // 애니메이션 종료
+        if (animationContainer.lottieInstance) {
+          animationContainer.lottieInstance.destroy();
+        }
+      });
+  }
+
+  // CSRF 토큰을 가져오는 함수
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.startsWith(name + "=")) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+</script>
+
+</body>
+</html>
